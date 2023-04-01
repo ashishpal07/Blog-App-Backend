@@ -7,16 +7,16 @@ module.exports = {
   // CREATE COMMENT
   commentCreate: async (req, res) => {
     const blogId = req.params.blogId;
-    const { content } = req.body;
+    const { comment } = req.body;
 
     // comment created and stores user and blog
-    let comment = await Comment.create({
-      comment: content,
+    let createComment = await Comment.create({
+      comment: comment,
       user: req.user._id,
       blog: blogId,
     });
 
-    if (!comment) {
+    if (!createComment) {
       return res
         .status(500)
         .json({ message: "Internal Server Error - creating comment" });
@@ -25,7 +25,7 @@ module.exports = {
     // save commentId in Blog.comments
     let saveCommentInBlog = await Blog.findByIdAndUpdate(
       blogId,
-      { $push: { comments: comment._id } },
+      { $push: { comments: createComment._id } },
       { new: true }
     );
 
@@ -38,7 +38,7 @@ module.exports = {
     // save comment in user
     let saveCommentInUser = await User.findByIdAndUpdate(
       req?.user?._id,
-      { $push: { comments: comment._id } },
+      { $push: { comments: createComment._id } },
       { new: true }
     );
 
@@ -60,7 +60,7 @@ module.exports = {
       return res.status(404).json({ message: "Comment Not Found" });
     }
 
-    if (comment.user == req.user._id) {
+    if (comment.user.equals(req.user._id)) {
       let deleteComment = await Comment.findByIdAndDelete(commentId);
       if(!deleteComment) {
         return res.status(401).json({ message: "Not Able To Delete Comment" });
@@ -85,5 +85,6 @@ module.exports = {
     } else {
       return res.status(400).json({ message: "Unauthorized Not Your Comment" });
     }
+    return res.status(200).json({message: "Comment deleted successfully"});
   }
 };

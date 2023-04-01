@@ -45,7 +45,7 @@ module.exports = {
         return res.status(404).json({message: "blog Not Found"});
     }
 
-    if(blog.user == req.user._id) {
+    if(blog.user.equals(req.user._id)) {
         let updateBlog = await Blog.findByIdAndUpdate(
             id, 
             {title, description, image},
@@ -82,7 +82,7 @@ module.exports = {
         return res.status(500).json({ message: "Unable To Delete" });
     }
     
-    if(blog.user == req.user._id) {
+    if(blog.user.equals(req.user._id)) {
         let deleteBlogFromUser = await User.findByIdAndUpdate(blog?.user, {
             $pull: { blogs: id },
         });

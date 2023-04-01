@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.post("/create/:blogId", authenticate, commentController.commentCreate);
 
-router.delete("/:id", authenticate);
+router.delete("/:id", authenticate, commentController.deleteComment);
 
 module.exports = router;
